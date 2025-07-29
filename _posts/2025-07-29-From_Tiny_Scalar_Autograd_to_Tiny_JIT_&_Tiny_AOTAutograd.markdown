@@ -2,7 +2,7 @@
 layout: post
 title:  "From Tiny Scalar Autograd to Tiny JIT & Tiny AOTAutograd"
 date:   2025-07-29 11:12:14 -0400
-categories: jit aot autograd
+# categories: jit aot autograd
 ---
 # From Tiny Scalar Autograd to Tiny JIT & Tiny AOTAutograd
 
