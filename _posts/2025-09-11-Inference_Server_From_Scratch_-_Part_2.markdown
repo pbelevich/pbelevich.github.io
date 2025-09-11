@@ -5,11 +5,11 @@ date:   2025-09-11 12:00:00 -0400
 # categories:
 ---
 
-In Post #2, **myserve** graduates from a token-echo toy to a real generator. We wire a Hugging Face causal-LM directly to the same OpenAI-compatible `/v1/chat/completions` endpoint from [Post 1](https://pbelevich.github.io/2025/09/11/From_Zero_to_Serve_-_Post_1.html) and keep streaming via SSE, so your clients don’t change at all. Under the hood, a tiny **model registry** loads and caches `(model, tokenizer)` bundles—pick `sshleifer/tiny-gpt2` for fast CPU checks, or step up to **TinyLlama** / Llama-family when you have the VRAM and (optionally) a HF token.
+In Part #2, **myserve** graduates from a token-echo toy to a real generator. We wire a Hugging Face causal-LM directly to the same OpenAI-compatible `/v1/chat/completions` endpoint from [Post 1](https://pbelevich.github.io/2025/09/11/From_Zero_to_Serve_-_Post_1.html) and keep streaming via SSE, so your clients don’t change at all. Under the hood, a tiny **model registry** loads and caches `(model, tokenizer)` bundles—pick `sshleifer/tiny-gpt2` for fast CPU checks, or step up to **TinyLlama** / Llama-family when you have the VRAM and (optionally) a HF token.
 
 Generation starts simple and explicit: a **greedy loop** with **no KV cache**—we recompute attention from scratch each step. That’s intentional. This version is slow on long outputs, but it’s a rock-solid **correctness baseline** we’ll optimize in later posts (KV cache, FlashAttention, quantization, etc.). We also add **parity tests** against `transformers.generate()` on a tiny model to ensure our next-token choices match reference behavior, so every future speedup can be measured against known-good outputs.
 
-To follow along, make sure [Post 1](https://pbelevich.github.io/2025/09/11/From_Zero_to_Serve_-_Post_1.html) is running and install a suitable **PyTorch** (CPU or CUDA per your setup); optionally log in with `huggingface_hub` to pull gated weights. With that, your OpenAI-compatible server now “thinks” for real—streaming decoded tokens in real time while keeping the API stable for existing clients.
+To follow along, make sure [Part 1](https://pbelevich.github.io/2025/09/10/Inference_Server_From_Scratch_-_Part_1.html) is running and install a suitable **PyTorch** (CPU or CUDA per your setup); optionally log in with `huggingface_hub` to pull gated weights. With that, your OpenAI-compatible server now “thinks” for real—streaming decoded tokens in real time while keeping the API stable for existing clients.
 
 ---
 
