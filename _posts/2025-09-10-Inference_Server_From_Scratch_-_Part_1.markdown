@@ -1,11 +1,9 @@
 ---
 layout: post
-title:  "From Zero to Serve — Post 1"
-date:   2025-09-10 23:11:14 -0400
+title:  "Inference Server From Scratch - Part 1: OpenAI API"
+date:   2025-09-10 12:00:00 -0400
 # categories:
 ---
-# From Zero to Serve — Post 1
-
 Since I work a lot with real inference servers, I’ve always wanted to know how they work under the hood—so I decided to build my own wheel. This series documents that journey: designing and implementing an LLM inference server from first principles, then hardening it into something you could actually run. The goals are simple but ambitious: OpenAI-compatible APIs, Hugging Face model support, and a clear path from tiny dense models to tensor-parallel giants and eventually Mixture-of-Experts (MoE).
 
 Why build it yourself when great servers already exist? Because nothing clarifies trade-offs like owning the constraints: batching vs. latency, KV-cache layouts, prefill vs. decode scheduling, attention kernels, quantization choices, and the realities of memory bandwidth and interconnects. By the end, you’ll understand not just what to tweak, but why it moves the needle.
@@ -403,6 +401,6 @@ print()
 
 In this stub we prioritize client parity and predictability: we use **SSE** because that’s what OpenAI SDKs speak by default (WebSockets can come later), and we emit a **role preamble** so `delta.role="assistant"` appears in the first chunk as many clients expect. Streaming is **token-by-token**, which can look quirky with BPE (leading spaces, partial words)—acceptable for an echo server, and it will feel natural once a real model produces substring chunks. We **ignore unknown fields** to stay forward-compatible with evolving OpenAI params. Finally, **`max_tokens`** is enforced conservatively: we cap echoes (default 128) to avoid runaway responses until we add proper stopping and safety in later posts.
 
-Next up in **Post #2**, we’ll swap the echo trick for a **real small dense model**—think Llama-3-1B or TinyLlama—and run a naïve forward pass to actually generate tokens (still no KV cache). We’ll add **correctness tests** that compare our logits/next-token picks against Hugging Face’s `generate()` on the same prompts, so we can trust the plumbing before optimizing. Until then, we already have a working **OpenAI-compatible server** that existing clients can call—it just “thinks” by echoing tokens.
+Next up in **Part #2**, we’ll swap the echo trick for a **real small dense model**—think Llama-3-1B or TinyLlama—and run a naïve forward pass to actually generate tokens (still no KV cache). We’ll add **correctness tests** that compare our logits/next-token picks against Hugging Face’s `generate()` on the same prompts, so we can trust the plumbing before optimizing. Until then, we already have a working **OpenAI-compatible server** that existing clients can call—it just “thinks” by echoing tokens.
 
 All code for this first milestone is available here: [https://github.com/pbelevich/myserve/tree/ver1](https://github.com/pbelevich/myserve/tree/ver1) — feel free to clone, run the smoke tests, and open issues or PRs as you follow along.
