@@ -4,7 +4,6 @@ title:  "From Zero to Serve — Post 2"
 date:   2025-09-11 10:49:44 -0400
 # categories:
 ---
-# From Zero to Serve — Post 2
 
 In Post #2, **myserve** graduates from a token-echo toy to a real generator. We wire a Hugging Face causal-LM directly to the same OpenAI-compatible `/v1/chat/completions` endpoint from [Post 1](https://pbelevich.github.io/2025/09/11/From_Zero_to_Serve_-_Post_1.html) and keep streaming via SSE, so your clients don’t change at all. Under the hood, a tiny **model registry** loads and caches `(model, tokenizer)` bundles—pick `sshleifer/tiny-gpt2` for fast CPU checks, or step up to **TinyLlama** / Llama-family when you have the VRAM and (optionally) a HF token.
 
