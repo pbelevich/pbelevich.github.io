@@ -437,5 +437,7 @@ curl http://localhost:8000/v1/chat/completions \
 
 We keep this post’s shape deliberately simple and testable. A **registry** (not globals) gives us a keyed cache today and a path to a real multi-model manager tomorrow—think embeddings, MoE, or A/B variants. The **naïve greedy loop** that recomputes attention each step is slow by design, but it makes logits easy to inspect and correctness trivial to verify; a KV cache lands in Post 4. **Streaming stays at the edge**: we emit one token’s text per step so the OpenAI wire format remains stable even as the decoding core evolves. And with **deterministic greedy** (`model.eval()`, no sampling), outputs are reproducible—perfect for parity tests and CI.
 
+The full code for this second milestone lives here: [https://github.com/pbelevich/myserve/tree/ver2](https://github.com/pbelevich/myserve/tree/ver2) — clone it, run the parity and streaming tests, and open issues/PRs as you try different models.
+
 In **Post 3**, we’ll move beyond greedy and implement **sampling**—`temperature`, **top-k**, and **nucleus (top-p)**—so OpenAI-style parameters map cleanly onto our generator. We’ll add **logprobs** (including top-logprobs) and **seed control** for reproducible runs, and tighten the request parsing so client options translate **1:1** into a well-defined generation config. The goal: feature parity with common OpenAI clients while keeping outputs debuggable and deterministic when you want them to be.
 
