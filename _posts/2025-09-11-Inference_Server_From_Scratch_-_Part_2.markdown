@@ -1,7 +1,7 @@
 ---
 layout: post
-title:  "From Zero to Serve — Post 2"
-date:   2025-09-11 10:49:44 -0400
+title:  "Inference Server From Scratch - Part 2: Real Model"
+date:   2025-09-11 12:00:00 -0400
 # categories:
 ---
 
