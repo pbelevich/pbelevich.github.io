@@ -514,7 +514,7 @@ curl http://localhost:8000/v1/chat/completions \
 
 ---
 
-A few design choices keep this step practical and compatible. **Penalties** are implemented in logits space to mirror OpenAI’s public guidance—close in spirit, though exact parity may vary at the margins. **Seed control** uses a per-request `torch.Generator` (CPU or CUDA to match the model device), so concurrent requests don’t collide. For **logprobs**, we return both token **text** and **bytes**; the latter is robust for clients that diff at the byte level across tokenizers/locales. And for **back-compat**, when `logprobs=false` the response shape is unchanged from Post 2, so existing clients keep working without code changes.
+A few design choices keep this step practical and compatible. **Penalties** are implemented in logits space to mirror OpenAI’s public guidance—close in spirit, though exact parity may vary at the margins. **Seed control** uses a per-request `torch.Generator` (CPU or CUDA to match the model device), so concurrent requests don’t collide. For **logprobs**, we return both token **text** and **bytes**; the latter is robust for clients that diff at the byte level across tokenizers/locales. And for **back-compat**, when `logprobs=false` the response shape is unchanged from [Part 2](https://pbelevich.github.io/2025/09/11/Inference_Server_From_Scratch_-_Part_2.html), so existing clients keep working without code changes.
 
 The complete Part 3 code is here: [https://github.com/pbelevich/myserve/tree/ver3](https://github.com/pbelevich/myserve/tree/ver3) — pull it, run the sampling/logprobs tests, and let me know where you want to push the API or performance next.
 
