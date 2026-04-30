@@ -1,0 +1,340 @@
+---
+layout: post
+title:  "Teaching a LEGO Porsche to Park Itself with Imitation Learning"
+date:   2026-04-30 12:00:00 -0400
+# categories:
+---
+
+# Teaching a LEGO Porsche to Park Itself with Imitation Learning
+
+I wanted to see how far a small, low-cost robotics stack could go without simulation, expensive sensors, or a custom robot platform. The result is a compact physical-AI project: a LEGO Technic 42176 Porsche GT4 e-Performance that learns to drive itself into a garage from camera observations.
+
+The project combines a Bluetooth-controlled LEGO car, an RTSP camera, the Hugging Face LeRobot framework, and an ACT policy trained with behavior cloning. A human first drives the car into the garage multiple times. Those demonstrations become a robotics dataset. A neural policy then learns to map camera frames and current car state into speed and steering commands. At inference time, the trained model takes over and drives the real LEGO car.
+
+Repository: https://github.com/pbelevich/lego42176
+
+Dataset: https://huggingface.co/datasets/pbelevich/lego42176_garage_parking
+
+Model: https://huggingface.co/pbelevich/lego42176_garage_parking_act
+
+---
+
+## Why this project?
+
+Most robotics demos hide a lot of complexity behind a polished video. I wanted something small enough to build at home but realistic enough to expose the full robotics loop:
+
+1. Control real hardware.
+2. Capture synchronized observations and actions.
+3. Build a dataset from human demonstrations.
+4. Train a policy.
+5. Run the model back on the physical system.
+6. Deal with the messy parts: camera latency, Bluetooth control, lighting, frame rates, safety stops, and the gap between training data and real execution.
+
+A LEGO Technic car is a great platform for this because it is safe, cheap compared with robotics hardware, and already has motors, steering, and Bluetooth control. The task is simple to describe but non-trivial for a learned controller: start from a position in front of a small garage and drive into it using only a camera view and the current speed/steering state.
+
+---
+
+## Hardware setup
+
+The setup is intentionally minimal:
+
+- **Robot:** LEGO Technic 42176 Porsche GT4 e-Performance
+- **Control:** Bluetooth Low Energy connection to the LEGO hub
+- **Camera:** RTSP-capable IP camera streaming 640×480 video at 15 FPS
+- **Training machine:** MacBook Pro with Apple Silicon, using the PyTorch MPS backend
+
+The camera is external rather than mounted on the car. It observes the car and the garage from a fixed viewpoint. This keeps the project simple while still making the policy learn from real pixels.
+
+The control interface exposes two continuous actions:
+
+- `speed`
+- `steering`
+
+Both are normalized during training and mapped back to LEGO motor commands during inference.
+
+---
+
+## System architecture
+
+The complete loop looks like this:
+
+```text
+Human keyboard control
+        │
+        ▼
+LEGO car drives into garage
+        │
+        ├── camera frame from RTSP stream
+        └── current speed / steering state
+        │
+        ▼
+LeRobot dataset
+        │
+        ▼
+ACT policy training
+        │
+        ▼
+Closed-loop inference
+        │
+        ▼
+Model outputs speed + steering
+        │
+        ▼
+BLE command to LEGO hub
+```
+
+The policy is trained with behavior cloning: it observes what the human did and learns to imitate those actions from the same observations.
+
+---
+
+## Data collection: turning driving into a robotics dataset
+
+The first step is manual driving. The script connects to the LEGO hub over BLE and lets me drive with the keyboard:
+
+```bash
+python main.py
+```
+
+Once manual control works, the dataset recorder adds the camera and writes demonstrations in LeRobot format:
+
+```bash
+python record_dataset.py
+```
+
+The controls are simple:
+
+- Arrow keys or WASD: drive
+- `R`: start or stop recording an episode
+- `N`: discard the current episode
+- Space: emergency stop
+- `Q` or Esc: quit and save
+
+Each episode is one attempt to drive the car into the garage. I press `R`, drive into the garage, then press `R` again to save the episode. The dataset is finalized after each episode so that data is not lost if the process exits unexpectedly.
+
+The published dataset contains roughly:
+
+- 100 episodes
+- 12k frames
+- 13 minutes of driving
+- 15 FPS video
+- 640×480 resolution
+- camera observations, speed/steering state, and speed/steering actions
+
+This is a small dataset, but that is part of the point. ACT-style imitation learning is attractive because it can learn useful behavior from surprisingly little real-world demonstration data when the task distribution is constrained.
+
+---
+
+## Model: Action Chunking with Transformers
+
+The policy uses ACT: Action Chunking with Transformers. Instead of predicting only the next immediate action, ACT predicts a chunk of future actions. In this project, the chunk size is 20 steps, or about 1.3 seconds at 15 FPS.
+
+That matters for real control. A one-step policy can become jittery because each frame asks the model to make another tiny decision. A chunked policy can produce smoother short-horizon behavior, which is useful for driving and steering.
+
+The model takes two inputs:
+
+```text
+observation.image  -> camera frame
+observation.state  -> current speed and steering
+```
+
+It outputs:
+
+```text
+action -> target speed and steering
+```
+
+The policy architecture is intentionally compact:
+
+- ResNet18 image encoder
+- Transformer policy
+- VAE latent variable
+- 17M parameters
+- continuous two-dimensional action space
+
+This is small enough to train on a MacBook Pro M1 Pro with the PyTorch MPS backend.
+
+---
+
+## Training on Apple Silicon
+
+Training is launched with:
+
+```bash
+python train.py
+```
+
+The training script uses LeRobot’s ACT implementation and saves checkpoints under:
+
+```text
+./outputs/train/checkpoints/
+```
+
+The main hyperparameters are:
+
+```text
+training steps: 50,000
+batch size:     8
+learning rate:  1e-4
+chunk size:     20
+backbone:       ResNet18
+hidden dim:     256
+heads:          4
+```
+
+The published model was trained on a MacBook Pro M1 Pro using the MPS backend. That makes the project very approachable: no cloud GPU, no simulator cluster, no high-end robotics workstation.
+
+---
+
+## Inference: handing control to the model
+
+After training, the inference script loads a checkpoint, connects to the LEGO hub, opens the camera stream, and creates a small pygame control window:
+
+```bash
+python inference.py outputs/train/checkpoints/050000/pretrained_model
+```
+
+The inference loop does four things:
+
+1. Read the latest camera frame.
+2. Build the model observation from image + current speed/steering.
+3. Run the ACT policy to predict an action.
+4. Convert the predicted speed and steering back into BLE commands for the LEGO hub.
+
+The controls stay available during inference:
+
+- Enter: start or stop autonomous mode
+- Space: emergency stop and return to manual mode
+- Arrow keys or WASD: manual override
+- `Q` or Esc: quit
+
+This manual override is important. When working with physical systems, even small LEGO robots should have a quick way to stop the policy and recover control.
+
+---
+
+## What made this interesting
+
+The project is small, but it includes many of the same problems that appear in larger robot-learning systems.
+
+### 1. The data distribution matters more than the model size
+
+The policy only learns the situations it sees. If all demonstrations start from the same position, the model may work well from that position but fail from a slightly different angle. More diverse initial positions, lighting conditions, and trajectories would likely improve robustness more than simply making the model larger.
+
+### 2. Real-time control is about the whole loop
+
+Model inference is only one part of the system. Camera latency, frame rate, BLE command latency, action smoothing, and UI event handling all affect the final behavior.
+
+For this project, I used a 15 FPS dataset and a 30 Hz control loop. The model predicts target speed and steering, then the control loop smoothly moves toward those targets rather than instantly snapping to them.
+
+### 3. Small robots are great for debugging embodied AI
+
+With a LEGO car, failures are cheap. The car can miss the garage, bump into the wall, or stop early without damaging expensive hardware. That makes it a good testbed for learning the practical mechanics of data collection, policy training, and deployment.
+
+### 4. LeRobot makes the workflow feel like modern ML
+
+The dataset, model, and training loop all fit into a familiar PyTorch/Hugging Face workflow. That is useful because it makes real-world robotics feel closer to the way we already build and share ML models: datasets, checkpoints, scripts, and reproducible experiments.
+
+---
+
+## Current limitations
+
+This is an early version, and there are several obvious limitations:
+
+- The camera is fixed and external.
+- The task is narrow: garage parking from a limited set of starts.
+- The policy is trained only with behavior cloning, so it cannot recover from every off-distribution mistake.
+- There is no explicit localization or mapping.
+- There is no simulation environment for evaluation.
+- The model does not reason about obstacles or dynamic scenes.
+
+Those limitations are also good next steps.
+
+---
+
+## Next experiments
+
+Here are the improvements I would try next:
+
+1. **More diverse demonstrations**
+   - Different starting positions
+   - Different garage angles
+   - Different lighting
+   - Partial failures and recoveries
+
+2. **Mounted camera**
+   - Move from third-person observation to first-person control.
+   - This would make the setup closer to real autonomous driving.
+
+3. **Closed-loop evaluation**
+   - Track success rate across randomized starts.
+   - Measure time-to-park and number of interventions.
+
+4. **Policy comparison**
+   - ACT vs diffusion policy vs smaller CNN/MLP baselines.
+   - Understand how much architecture matters for this task.
+
+5. **On-device inference**
+   - Run the model on a Jetson or Raspberry Pi-class device.
+   - Turn the LEGO car into a self-contained robot.
+
+6. **Voice commands**
+   - Add a high-level command layer such as “park in the garage” or “drive two circles.”
+   - Keep the low-level driving policy as the motor controller.
+
+---
+
+## How to try it
+
+Clone the repository:
+
+```bash
+git clone https://github.com/pbelevich/lego42176.git
+cd lego42176
+```
+
+Create a Python 3.12 virtual environment:
+
+```bash
+python3.12 -m venv venv_record
+source venv_record/bin/activate
+```
+
+Install dependencies:
+
+```bash
+pip install lerobot pygame bleak opencv-python-headless
+```
+
+Set the RTSP camera URL:
+
+```bash
+export RTSP_URL="rtsp://user:password@192.168.1.100:554/cam/realmonitor?channel=1&subtype=1"
+```
+
+Then run the pipeline:
+
+```bash
+# manual control
+python main.py
+
+# record demonstrations
+python record_dataset.py
+
+# train policy
+python train.py
+
+# run autonomous inference
+python inference.py outputs/train/checkpoints/050000/pretrained_model
+```
+
+The dataset and trained model are also published on Hugging Face, so you can inspect the data or load the trained ACT policy directly.
+
+---
+
+## Final thoughts
+
+This project is a small example of a larger trend: robotics is becoming more like modern machine learning. Instead of hand-writing every control rule, we can collect demonstrations, train policies, publish datasets, share checkpoints, and iterate.
+
+A LEGO car parking itself in a toy garage is obviously not a production autonomous vehicle. But the workflow is real: collect data from the physical world, train a model, deploy it back onto the physical system, observe failures, and improve the dataset.
+
+That loop is the core of embodied AI. LEGO just makes it safe, cheap, and fun.
+
