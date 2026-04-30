@@ -17,11 +17,22 @@ Dataset: https://huggingface.co/datasets/pbelevich/lego42176_garage_parking
 
 Model: https://huggingface.co/pbelevich/lego42176_garage_parking_act
 
-https://github.com/user-attachments/assets/6e38d879-f9b4-4064-92a1-30522fcc79a6
+<div class="video-grid">
+  <video controls playsinline preload="metadata">
+    <source src="https://github.com/user-attachments/assets/6e38d879-f9b4-4064-92a1-30522fcc79a6" type="video/quicktime">
+    Your browser does not support the video tag.
+  </video>
 
-https://github.com/user-attachments/assets/abc53f72-d04d-47e7-a700-f97a95772a9e
+  <video controls playsinline preload="metadata">
+    <source src="https://github.com/user-attachments/assets/abc53f72-d04d-47e7-a700-f97a95772a9e" type="video/quicktime">
+    Your browser does not support the video tag.
+  </video>
 
-https://github.com/user-attachments/assets/3718ab95-e469-49fc-a886-413884e9c95c
+  <video controls playsinline preload="metadata">
+    <source src="https://github.com/user-attachments/assets/3718ab95-e469-49fc-a886-413884e9c95c" type="video/quicktime">
+    Your browser does not support the video tag.
+  </video>
+</div>
 
 ---
 
