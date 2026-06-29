@@ -289,6 +289,7 @@ concrete and easy to inspect.
 
 The skeleton is shared by all reductions:
 
+{% raw %}
 ```python
 self.shared_lines.append(f"    __shared__ {cuda_ty} {shared}[{width}];")
 
@@ -301,6 +302,7 @@ self.lines.extend(
     ]
 )
 ```
+{% endraw %}
 
 Only the combiner changes:
 

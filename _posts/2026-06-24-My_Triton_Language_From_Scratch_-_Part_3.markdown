@@ -563,6 +563,7 @@ small.
 A store has no SSA result, so it does not go through `assign`. It consumes an
 address, a value, and an optional mask:
 
+{% raw %}
 ```python
 if op.opcode == "store":
     ptr = self.pointer_operand(op.operands[0])
@@ -588,6 +589,7 @@ if op.opcode == "store":
         )
     return
 ```
+{% endraw %}
 
 The final SSA operation:
 
@@ -667,6 +669,7 @@ by `arange`. There is no runtime CUDA parameter left to pass.
 
 The complete generation method is then almost boring:
 
+{% raw %}
 ```python
 def generate(self, kernel_name, ssa_ops, params) -> str:
     self.lines = []
@@ -689,6 +692,7 @@ def generate(self, kernel_name, ssa_ops, params) -> str:
 
     return "\n".join(body)
 ```
+{% endraw %}
 
 The interesting behavior lives in the per-op lowering rules. The function
 shell only resets state, walks the ordered SSA list, and wraps the emitted
