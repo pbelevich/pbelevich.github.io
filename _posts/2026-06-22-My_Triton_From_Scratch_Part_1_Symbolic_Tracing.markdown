@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "My Triton Language From Scratch Part 1"
+title:  "My Triton From Scratch Part 1: Symbolic Tracing"
 date:   2026-06-22 12:00:00 +0000
 # categories:
 ---
@@ -451,4 +451,4 @@ without making CUDA the first dependency.
 All code for this milestone is available at
 [https://github.com/pbelevich/mytriton/tree/ver1](https://github.com/pbelevich/mytriton/tree/ver1).
 
-Next: [Part 2]({% post_url 2026-06-23-My_Triton_Language_From_Scratch_-_Part_2 %}).
+Next: [Part 2: Typed SSA]({% post_url 2026-06-23-My_Triton_From_Scratch_Part_2_Typed_SSA %}).

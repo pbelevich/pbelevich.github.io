@@ -1,29 +1,29 @@
 ---
 layout: post
-title:  "My Triton Language From Scratch Part 7"
+title:  "My Triton From Scratch Part 7: Minimal MLIR"
 date:   2026-06-28 16:00:00 +0000
 # categories:
 ---
 
-In [Part 1]({% post_url 2026-06-22-My_Triton_Language_From_Scratch_-_Part_1 %}),
+In [Part 1: Symbolic Tracing]({% post_url 2026-06-22-My_Triton_From_Scratch_Part_1_Symbolic_Tracing %}),
 mytriton learned how to trace a Python function into an expression-tree IR.
 
-In [Part 2]({% post_url 2026-06-23-My_Triton_Language_From_Scratch_-_Part_2 %}),
+In [Part 2: Typed SSA]({% post_url 2026-06-23-My_Triton_From_Scratch_Part_2_Typed_SSA %}),
 it learned how to infer types and lower that tree into typed SSA-style
 operations.
 
-In [Part 3]({% post_url 2026-06-24-My_Triton_Language_From_Scratch_-_Part_3 %}),
+In [Part 3: CUDA Lowering]({% post_url 2026-06-24-My_Triton_From_Scratch_Part_3_CUDA_Lowering %}),
 it learned how to turn SSA into CUDA C++ and launch the generated kernel.
 
-In [Part 4]({% post_url 2026-06-25-My_Triton_Language_From_Scratch_-_Part_4 %}),
+In [Part 4: Elementwise Ops]({% post_url 2026-06-25-My_Triton_From_Scratch_Part_4_Elementwise_Ops %}),
 the language grew enough elementwise operations to write ReLU, leaky ReLU, and
 sigmoid.
 
-In [Part 5]({% post_url 2026-06-26-My_Triton_Language_From_Scratch_-_Part_5 %}),
+In [Part 5: Verification]({% post_url 2026-06-26-My_Triton_From_Scratch_Part_5_Verification %}),
 the middle of the compiler became stricter: SSA is now verified, optimized, and
 verified again before code generation.
 
-In [Part 6]({% post_url 2026-06-27-My_Triton_Language_From_Scratch_-_Part_6 %}),
+In [Part 6: Reductions]({% post_url 2026-06-27-My_Triton_From_Scratch_Part_6_Reductions %}),
 vectors learned how to cooperate inside one CUDA block: row-wise sum, max, min,
 softmax, and a first naive matmul.
 
@@ -734,7 +734,7 @@ There are two natural directions from here.
 
 One is to make the MLIR backend less tiny. The next easy operations would be
 the elementwise features from
-[Part 4]({% post_url 2026-06-25-My_Triton_Language_From_Scratch_-_Part_4 %}):
+[Part 4: Elementwise Ops]({% post_url 2026-06-25-My_Triton_From_Scratch_Part_4_Elementwise_Ops %}):
 
 - unary negation;
 - `tl.exp`;
@@ -758,7 +758,7 @@ ways to represent GPU memory and barriers, and I do not want to rush that into
 an accidental translation.
 
 Tiled matmul is still waiting too.
-[Part 6]({% post_url 2026-06-27-My_Triton_Language_From_Scratch_-_Part_6 %})
+[Part 6: Reductions]({% post_url 2026-06-27-My_Triton_From_Scratch_Part_6_Reductions %})
 made it obvious that source-visible shared memory and synchronization are
 missing from the language. Version 7 did not solve that. It did something more
 structural first: it made mytriton stop having only one target.

@@ -1,15 +1,15 @@
 ---
 layout: post
-title:  "My Triton Language From Scratch Part 3"
+title:  "My Triton From Scratch Part 3: CUDA Lowering"
 date:   2026-06-24 12:00:00 +0000
 # categories:
 ---
 
-In [Part 1]({% post_url 2026-06-22-My_Triton_Language_From_Scratch_-_Part_1 %}),
+In [Part 1: Symbolic Tracing]({% post_url 2026-06-22-My_Triton_From_Scratch_Part_1_Symbolic_Tracing %}),
 mytriton learned how to execute a Python function with symbolic values and
 capture the result as an expression-tree IR.
 
-In [Part 2]({% post_url 2026-06-23-My_Triton_Language_From_Scratch_-_Part_2 %}),
+In [Part 2: Typed SSA]({% post_url 2026-06-23-My_Triton_From_Scratch_Part_2_Typed_SSA %}),
 it learned how to infer types for that tree and lower it into a small SSA-style
 IR. The vector-add kernel stopped being one deeply nested `Store` and became a
 linear sequence of typed operations with explicit inputs and results.
@@ -202,7 +202,7 @@ numeric addition. It is an address waiting for a memory operation to consume
 it.
 
 The distinction from
-[Part 1]({% post_url 2026-06-22-My_Triton_Language_From_Scratch_-_Part_1 %})
+[Part 1: Symbolic Tracing]({% post_url 2026-06-22-My_Triton_From_Scratch_Part_1_Symbolic_Tracing %})
 has survived all the way through the compiler. `AddPtr` became the SSA opcode
 `addptr`, and now `addptr` becomes a backend pointer reference rather than an
 ordinary CUDA `+` expression.
@@ -962,7 +962,7 @@ Python kernel
 ```
 
 The launch still looks like the API established in
-[Part 1]({% post_url 2026-06-22-My_Triton_Language_From_Scratch_-_Part_1 %}):
+[Part 1: Symbolic Tracing]({% post_url 2026-06-22-My_Triton_From_Scratch_Part_1_Symbolic_Tracing %}):
 
 ```python
 add_kernel[
@@ -1053,4 +1053,4 @@ make the existing pipeline feel less like it was custom-built for one kernel.
 All code for this milestone is available at
 [https://github.com/pbelevich/mytriton/tree/ver3](https://github.com/pbelevich/mytriton/tree/ver3).
 
-Next: [Part 4]({% post_url 2026-06-25-My_Triton_Language_From_Scratch_-_Part_4 %}).
+Next: [Part 4: Elementwise Ops]({% post_url 2026-06-25-My_Triton_From_Scratch_Part_4_Elementwise_Ops %}).

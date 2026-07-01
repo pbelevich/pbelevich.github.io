@@ -1,18 +1,18 @@
 ---
 layout: post
-title:  "My Triton Language From Scratch Part 4"
+title:  "My Triton From Scratch Part 4: Elementwise Ops"
 date:   2026-06-25 13:00:00 +0000
 # categories:
 ---
 
-In [Part 1]({% post_url 2026-06-22-My_Triton_Language_From_Scratch_-_Part_1 %}),
+In [Part 1: Symbolic Tracing]({% post_url 2026-06-22-My_Triton_From_Scratch_Part_1_Symbolic_Tracing %}),
 mytriton learned how to trace a Triton-looking Python function into an
 expression tree.
 
-In [Part 2]({% post_url 2026-06-23-My_Triton_Language_From_Scratch_-_Part_2 %}),
+In [Part 2: Typed SSA]({% post_url 2026-06-23-My_Triton_From_Scratch_Part_2_Typed_SSA %}),
 it learned how to turn that tree into a typed SSA-style IR.
 
-In [Part 3]({% post_url 2026-06-24-My_Triton_Language_From_Scratch_-_Part_3 %}),
+In [Part 3: CUDA Lowering]({% post_url 2026-06-24-My_Triton_From_Scratch_Part_3_CUDA_Lowering %}),
 it learned how to lower that SSA into readable CUDA C++ and, when the inputs
 are CuPy arrays, actually launch the generated kernel.
 
@@ -263,7 +263,7 @@ It stops being only a memory safety guard and becomes data.
 ## Type inference for the new operations
 
 The type system from
-[Part 2]({% post_url 2026-06-23-My_Triton_Language_From_Scratch_-_Part_2 %})
+[Part 2: Typed SSA]({% post_url 2026-06-23-My_Triton_From_Scratch_Part_2_Typed_SSA %})
 already knows the two ideas these operations need:
 
 - numeric promotion;
@@ -455,7 +455,7 @@ That is the difference between adding a special case and growing a language.
 
 ## Lowering unary operations and select to CUDA
 
-[Part 3]({% post_url 2026-06-24-My_Triton_Language_From_Scratch_-_Part_3 %})
+[Part 3: CUDA Lowering]({% post_url 2026-06-24-My_Triton_From_Scratch_Part_3_CUDA_Lowering %})
 established the main CUDA lowering rule:
 
 ```text
@@ -630,7 +630,7 @@ the compiler to learn a new memory pattern. It isolates the new feature:
 elementwise maximum.
 
 The CUDA has the same shape as the vector-add kernel from
-[Part 3]({% post_url 2026-06-24-My_Triton_Language_From_Scratch_-_Part_3 %}):
+[Part 3: CUDA Lowering]({% post_url 2026-06-24-My_Triton_From_Scratch_Part_3_CUDA_Lowering %}):
 
 ```cuda
 extern "C" __global__
@@ -806,4 +806,4 @@ code generation.
 All code for this milestone is available at
 [https://github.com/pbelevich/mytriton/tree/ver4](https://github.com/pbelevich/mytriton/tree/ver4).
 
-Next: [Part 5]({% post_url 2026-06-26-My_Triton_Language_From_Scratch_-_Part_5 %}).
+Next: [Part 5: Verification]({% post_url 2026-06-26-My_Triton_From_Scratch_Part_5_Verification %}).

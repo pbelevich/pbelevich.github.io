@@ -1,23 +1,23 @@
 ---
 layout: post
-title:  "My Triton Language From Scratch Part 5"
+title:  "My Triton From Scratch Part 5: Verification"
 date:   2026-06-26 14:00:00 +0000
 # categories:
 ---
 
-In [Part 1]({% post_url 2026-06-22-My_Triton_Language_From_Scratch_-_Part_1 %}),
+In [Part 1: Symbolic Tracing]({% post_url 2026-06-22-My_Triton_From_Scratch_Part_1_Symbolic_Tracing %}),
 mytriton learned how to trace a Python function into an expression-tree IR.
 
-In [Part 2]({% post_url 2026-06-23-My_Triton_Language_From_Scratch_-_Part_2 %}),
+In [Part 2: Typed SSA]({% post_url 2026-06-23-My_Triton_From_Scratch_Part_2_Typed_SSA %}),
 it learned how to infer types and lower that tree into typed
 [SSA-style](https://en.wikipedia.org/wiki/Static_single-assignment_form)
 operations.
 
-In [Part 3]({% post_url 2026-06-24-My_Triton_Language_From_Scratch_-_Part_3 %}),
+In [Part 3: CUDA Lowering]({% post_url 2026-06-24-My_Triton_From_Scratch_Part_3_CUDA_Lowering %}),
 it learned how to turn those SSA operations into CUDA C++ and launch the
 generated kernel.
 
-In [Part 4]({% post_url 2026-06-25-My_Triton_Language_From_Scratch_-_Part_4 %}),
+In [Part 4: Elementwise Ops]({% post_url 2026-06-25-My_Triton_From_Scratch_Part_4_Elementwise_Ops %}),
 the language grew enough elementwise operations to write ReLU, leaky ReLU, and
 sigmoid: unary negation, `tl.exp`, `tl.minimum`, `tl.maximum`, and `tl.where`.
 
@@ -169,7 +169,7 @@ something. That belongs to the IR contract.
 
 ## Type rules at the SSA boundary
 
-[Part 2]({% post_url 2026-06-23-My_Triton_Language_From_Scratch_-_Part_2 %})
+[Part 2: Typed SSA]({% post_url 2026-06-23-My_Triton_From_Scratch_Part_2_Typed_SSA %})
 already had type inference. So why repeat type checks in a verifier?
 
 Because they protect different boundaries.
@@ -771,4 +771,4 @@ maximum, and eventually softmax.
 All code for this milestone is available at
 [https://github.com/pbelevich/mytriton/tree/ver5](https://github.com/pbelevich/mytriton/tree/ver5).
 
-Next: [Part 6]({% post_url 2026-06-27-My_Triton_Language_From_Scratch_-_Part_6 %}).
+Next: [Part 6: Reductions]({% post_url 2026-06-27-My_Triton_From_Scratch_Part_6_Reductions %}).
