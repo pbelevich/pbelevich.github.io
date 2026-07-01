@@ -799,28 +799,37 @@ ideas rather than one large special case.
 
 ## What's next
 
-The next step is to turn naive matmul into tiled matmul.
+The next question I want to answer is not about adding another CUDA-specific
+kernel. It is about the shape of the compiler itself: how much of mytriton is
+really a compiler, and how much of it is just a CUDA string generator?
 
-Version 6 now has some of the ingredients that make that possible, but the
-source language is still missing the shared-memory pieces:
+So the next version takes a detour through
+[MLIR](https://mlir.llvm.org/).
 
-- `tl.static_range` can unroll loops over compile-time tile dimensions;
-- the naive matmul kernel already has the two-dimensional grid and accumulator
-  structure.
+The goal is not to replace the CUDA backend yet. Version 6 has many features
+that the first MLIR backend will not support. The goal is smaller and more
+architectural: take the same optimized SSA for a simple elementwise kernel and
+lower it through a second backend.
 
-The missing pieces are a source-level way to allocate shared-memory tiles and a
-source-level way to express the synchronization points around those tiles. Once
-those exist, the missing kernel is the real tiled version: load a tile of `A`
-and `B` into shared memory, synchronize, perform the inner dot product from the
-shared tiles, synchronize again, and move to the next tile.
+That means the compiler path becomes:
 
-That will force mytriton to lean harder into side effects and ordering. A global
-`store` at the end of a kernel is easy to treat as the only effect. Shared
-memory is different: stores to shared memory are temporary, later loads depend
-on synchronization, and the optimizer has to respect that ordering instead of
-treating the whole program like a pure expression tree.
+```text
+Python kernel
+    -> expression-tree IR
+    -> typed SSA
+    -> optimization pipeline
+    -> CUDA C++ or MLIR GPU dialect
+```
 
-That sounds like exactly the right kind of trouble for the next part.
+The first MLIR backend will be deliberately narrow: one-dimensional elementwise
+kernels, `tl.program_id(0)`, `tl.arange(0, BLOCK)`, basic arithmetic, masked
+loads, and masked stores. That is much less than the CUDA backend supports, but
+it is enough to make the backend boundary real.
+
+Once there are two backends, the compiler has to be more honest about what is
+frontend IR, what is backend-specific lowering, and what it means to return
+"the generated source" from a launch. That feels like a useful detour before
+coming back to tiled matmul.
 
 All code for this milestone is available at
 [https://github.com/pbelevich/mytriton/tree/ver6](https://github.com/pbelevich/mytriton/tree/ver6).
