@@ -5,13 +5,14 @@ date:   2026-06-24 12:00:00 +0000
 # categories:
 ---
 
-In Part 1, mytriton learned how to execute a Python function with symbolic
-values and capture the result as an expression-tree IR.
+In [Part 1]({% post_url 2026-06-22-My_Triton_Language_From_Scratch_-_Part_1 %}),
+mytriton learned how to execute a Python function with symbolic values and
+capture the result as an expression-tree IR.
 
-In Part 2, it learned how to infer types for that tree and lower it into a
-small SSA-style IR. The vector-add kernel stopped being one deeply nested
-`Store` and became a linear sequence of typed operations with explicit inputs
-and results.
+In [Part 2]({% post_url 2026-06-23-My_Triton_Language_From_Scratch_-_Part_2 %}),
+it learned how to infer types for that tree and lower it into a small SSA-style
+IR. The vector-add kernel stopped being one deeply nested `Store` and became a
+linear sequence of typed operations with explicit inputs and results.
 
 Version 3 adds the next compiler layer: it lowers that typed SSA to
 [CUDA C++](https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html).
@@ -200,9 +201,11 @@ This says that `%4` refers to `x[v3]`. It is not yet a load, and it is not
 numeric addition. It is an address waiting for a memory operation to consume
 it.
 
-The distinction from Part 1 has survived all the way through the compiler.
-`AddPtr` became the SSA opcode `addptr`, and now `addptr` becomes a backend
-pointer reference rather than an ordinary CUDA `+` expression.
+The distinction from
+[Part 1]({% post_url 2026-06-22-My_Triton_Language_From_Scratch_-_Part_1 %})
+has survived all the way through the compiler. `AddPtr` became the SSA opcode
+`addptr`, and now `addptr` becomes a backend pointer reference rather than an
+ordinary CUDA `+` expression.
 
 ## Looking up operands
 
@@ -958,7 +961,8 @@ Python kernel
     -> values written to out
 ```
 
-The launch still looks like the API established in Part 1:
+The launch still looks like the API established in
+[Part 1]({% post_url 2026-06-22-My_Triton_Language_From_Scratch_-_Part_1 %}):
 
 ```python
 add_kernel[
@@ -1048,3 +1052,5 @@ make the existing pipeline feel less like it was custom-built for one kernel.
 
 All code for this milestone is available at
 [https://github.com/pbelevich/mytriton/tree/ver3](https://github.com/pbelevich/mytriton/tree/ver3).
+
+Next: [Part 4]({% post_url 2026-06-25-My_Triton_Language_From_Scratch_-_Part_4 %}).

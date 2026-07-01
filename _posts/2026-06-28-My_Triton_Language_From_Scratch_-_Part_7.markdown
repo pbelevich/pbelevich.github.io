@@ -5,23 +5,27 @@ date:   2026-06-28 16:00:00 +0000
 # categories:
 ---
 
-In Part 1, mytriton learned how to trace a Python function into an
-expression-tree IR.
+In [Part 1]({% post_url 2026-06-22-My_Triton_Language_From_Scratch_-_Part_1 %}),
+mytriton learned how to trace a Python function into an expression-tree IR.
 
-In Part 2, it learned how to infer types and lower that tree into typed
-SSA-style operations.
+In [Part 2]({% post_url 2026-06-23-My_Triton_Language_From_Scratch_-_Part_2 %}),
+it learned how to infer types and lower that tree into typed SSA-style
+operations.
 
-In Part 3, it learned how to turn SSA into CUDA C++ and launch the generated
-kernel.
+In [Part 3]({% post_url 2026-06-24-My_Triton_Language_From_Scratch_-_Part_3 %}),
+it learned how to turn SSA into CUDA C++ and launch the generated kernel.
 
-In Part 4, the language grew enough elementwise operations to write ReLU,
-leaky ReLU, and sigmoid.
+In [Part 4]({% post_url 2026-06-25-My_Triton_Language_From_Scratch_-_Part_4 %}),
+the language grew enough elementwise operations to write ReLU, leaky ReLU, and
+sigmoid.
 
-In Part 5, the middle of the compiler became stricter: SSA is now verified,
-optimized, and verified again before code generation.
+In [Part 5]({% post_url 2026-06-26-My_Triton_Language_From_Scratch_-_Part_5 %}),
+the middle of the compiler became stricter: SSA is now verified, optimized, and
+verified again before code generation.
 
-In Part 6, vectors learned how to cooperate inside one CUDA block: row-wise
-sum, max, min, softmax, and a first naive matmul.
+In [Part 6]({% post_url 2026-06-27-My_Triton_Language_From_Scratch_-_Part_6 %}),
+vectors learned how to cooperate inside one CUDA block: row-wise sum, max, min,
+softmax, and a first naive matmul.
 
 Version 7 does not add a new user-facing language feature.
 
@@ -729,7 +733,8 @@ project.
 There are two natural directions from here.
 
 One is to make the MLIR backend less tiny. The next easy operations would be
-the elementwise features from Part 4:
+the elementwise features from
+[Part 4]({% post_url 2026-06-25-My_Triton_Language_From_Scratch_-_Part_4 %}):
 
 - unary negation;
 - `tl.exp`;
@@ -752,10 +757,11 @@ reductions with explicit shared memory and synchronization. MLIR has its own
 ways to represent GPU memory and barriers, and I do not want to rush that into
 an accidental translation.
 
-Tiled matmul is still waiting too. Part 6 made it obvious that source-visible
-shared memory and synchronization are missing from the language. Version 7 did
-not solve that. It did something more structural first: it made mytriton stop
-having only one target.
+Tiled matmul is still waiting too.
+[Part 6]({% post_url 2026-06-27-My_Triton_Language_From_Scratch_-_Part_6 %})
+made it obvious that source-visible shared memory and synchronization are
+missing from the language. Version 7 did not solve that. It did something more
+structural first: it made mytriton stop having only one target.
 
 That feels like the right detour. Before teaching the language more CUDA-shaped
 features, I want the compiler boundary between "this is my IR" and "this is one

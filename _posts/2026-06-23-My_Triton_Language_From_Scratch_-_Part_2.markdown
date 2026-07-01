@@ -5,8 +5,9 @@ date:   2026-06-23 12:00:00 +0000
 # categories:
 ---
 
-In Part 1, mytriton learned how to take a small Triton-style Python kernel and
-turn it into compiler data.
+In [Part 1]({% post_url 2026-06-22-My_Triton_Language_From_Scratch_-_Part_1 %}),
+mytriton learned how to take a small Triton-style Python kernel and turn it
+into compiler data.
 
 That first version deliberately stopped at an expression-tree IR. Python
 operators created nodes such as `BinOp`, pointer arithmetic created `AddPtr`,
@@ -34,7 +35,8 @@ later compiler passes will want to consume.
 
 ## The expression tree we started with
 
-The kernel is the same vector addition from Part 1:
+The kernel is the same vector addition from
+[Part 1]({% post_url 2026-06-22-My_Triton_Language_From_Scratch_-_Part_1 %}):
 
 ```python
 @triton.jit
@@ -321,8 +323,9 @@ That is how `offsets < n` becomes `vector<256 x bool>`.
 
 ## Pointer arithmetic has its own rules
 
-Part 1 introduced `AddPtr` because pointer addition is not ordinary numeric
-addition. Version 2 finally uses that distinction for type checking.
+[Part 1]({% post_url 2026-06-22-My_Triton_Language_From_Scratch_-_Part_1 %})
+introduced `AddPtr` because pointer addition is not ordinary numeric addition.
+Version 2 finally uses that distinction for type checking.
 
 ```python
 elif isinstance(expr, AddPtr):
@@ -752,3 +755,5 @@ That feels like a very compiler-shaped kind of progress.
 
 All code for this milestone is available at
 [https://github.com/pbelevich/mytriton/tree/ver2](https://github.com/pbelevich/mytriton/tree/ver2).
+
+Next: [Part 3]({% post_url 2026-06-24-My_Triton_Language_From_Scratch_-_Part_3 %}).

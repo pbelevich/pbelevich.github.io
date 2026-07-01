@@ -450,3 +450,5 @@ without making CUDA the first dependency.
 
 All code for this milestone is available at
 [https://github.com/pbelevich/mytriton/tree/ver1](https://github.com/pbelevich/mytriton/tree/ver1).
+
+Next: [Part 2]({% post_url 2026-06-23-My_Triton_Language_From_Scratch_-_Part_2 %}).

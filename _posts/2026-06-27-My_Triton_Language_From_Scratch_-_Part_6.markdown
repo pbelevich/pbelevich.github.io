@@ -5,20 +5,23 @@ date:   2026-06-27 15:00:00 +0000
 # categories:
 ---
 
-In Part 1, mytriton learned how to trace a Python function into an
-expression-tree IR.
+In [Part 1]({% post_url 2026-06-22-My_Triton_Language_From_Scratch_-_Part_1 %}),
+mytriton learned how to trace a Python function into an expression-tree IR.
 
-In Part 2, it learned how to infer types and lower that tree into typed
-SSA-style operations.
+In [Part 2]({% post_url 2026-06-23-My_Triton_Language_From_Scratch_-_Part_2 %}),
+it learned how to infer types and lower that tree into typed SSA-style
+operations.
 
-In Part 3, it learned how to turn SSA into CUDA C++ and launch the generated
-kernel.
+In [Part 3]({% post_url 2026-06-24-My_Triton_Language_From_Scratch_-_Part_3 %}),
+it learned how to turn SSA into CUDA C++ and launch the generated kernel.
 
-In Part 4, the language grew enough elementwise operations to write ReLU,
-leaky ReLU, and sigmoid.
+In [Part 4]({% post_url 2026-06-25-My_Triton_Language_From_Scratch_-_Part_4 %}),
+the language grew enough elementwise operations to write ReLU, leaky ReLU, and
+sigmoid.
 
-In Part 5, the middle of the compiler became stricter: SSA is now verified,
-optimized, and verified again before CUDA code generation.
+In [Part 5]({% post_url 2026-06-26-My_Triton_Language_From_Scratch_-_Part_5 %}),
+the middle of the compiler became stricter: SSA is now verified, optimized, and
+verified again before CUDA code generation.
 
 Version 6 is the first version where vectors stop being only independent
 per-lane values.
@@ -328,9 +331,10 @@ combine operation decides whether the result is a sum, maximum, or minimum.
 
 ## The verifier learns reduction legality
 
-The verifier from Part 5 gets one new backend-shaped rule: reductions must
-consume one vector whose width matches the CUDA block size and is a power of
-two.
+The verifier from
+[Part 5]({% post_url 2026-06-26-My_Triton_Language_From_Scratch_-_Part_5 %})
+gets one new backend-shaped rule: reductions must consume one vector whose
+width matches the CUDA block size and is a power of two.
 
 That is not a general truth about reductions. It is a truth about this backend.
 The current lowering halves the active range:
@@ -833,3 +837,5 @@ coming back to tiled matmul.
 
 All code for this milestone is available at
 [https://github.com/pbelevich/mytriton/tree/ver6](https://github.com/pbelevich/mytriton/tree/ver6).
+
+Next: [Part 7]({% post_url 2026-06-28-My_Triton_Language_From_Scratch_-_Part_7 %}).
