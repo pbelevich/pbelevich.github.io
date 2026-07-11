@@ -730,42 +730,48 @@ project.
 
 ## What's next
 
-There are two natural directions from here.
+Version 7 was a backend detour. It did not make matmul faster, and it did not
+add another CUDA-shaped operation. It made the compiler boundary more honest:
+optimized SSA is the common middle, and CUDA C++ or MLIR GPU dialect are
+backend choices after that.
 
-One is to make the MLIR backend less tiny. The next easy operations would be
-the elementwise features from
-[Part 4: Elementwise Ops]({% post_url 2026-06-25-My_Triton_From_Scratch_Part_4_Elementwise_Ops %}):
+The next step returns to the CUDA path, but keeps that lesson.
 
-- unary negation;
-- `tl.exp`;
-- `tl.maximum` and `tl.minimum`;
-- `tl.where`.
-
-Those would let the MLIR backend run ReLU, leaky ReLU, and sigmoid. That would
-be a good test of whether the new backend can grow feature by feature the same
-way the CUDA backend did.
-
-The other direction is to bring in more of Version 6:
-
-- `tl.program_id(1)`;
-- two-dimensional launch grids;
-- reductions;
-- eventually softmax.
-
-That is a larger step, especially reductions. CUDA lowering implemented
-reductions with explicit shared memory and synchronization. MLIR has its own
-ways to represent GPU memory and barriers, and I do not want to rush that into
-an accidental translation.
-
-Tiled matmul is still waiting too.
+The naive matmul from
 [Part 6: Reductions]({% post_url 2026-06-27-My_Triton_From_Scratch_Part_6_Reductions %})
-made it obvious that source-visible shared memory and synchronization are
-missing from the language. Version 7 did not solve that. It did something more
-structural first: it made mytriton stop having only one target.
+already used a two-dimensional launch grid and `tl.static_range`, but its data
+model was still one-dimensional. A distributed value was always a
+`vector<N x T>`.
 
-That feels like the right detour. Before teaching the language more CUDA-shaped
-features, I want the compiler boundary between "this is my IR" and "this is one
-backend's lowering choice" to stay visible.
+That is awkward for matrix tiles.
+
+A tile of `C` is not naturally one long vector. It has rows and columns:
+
+```text
+block<BM x BN x f32>
+```
+
+So the next version changes the shape model underneath the same SSA pipeline.
+`VectorType` becomes a rank-1 spelling of a more general `BlockType`.
+`tl.arange(0, BM)[:, None]` and `tl.arange(0, BN)[None, :]` become small
+`expand_dims` operations. Broadcasting grows from "same vector width" into
+shape broadcasting, so a `BM x 1` block and a `1 x BN` block can produce a
+`BM x BN` block.
+
+The CUDA backend will still launch a flat thread block, but it will map
+`threadIdx.x` into tile coordinates:
+
+```cuda
+int tile_i = threadIdx.x / BN;
+int tile_j = threadIdx.x % BN;
+```
+
+That is not shared-memory matmul yet. It is the step before that: make the IR
+able to say that a value is tile-shaped instead of pretending every distributed
+value is only a vector.
+
+Next:
+[Part 8: Rank-2 Tiles]({% post_url 2026-06-29-My_Triton_From_Scratch_Part_8_Rank_2_Tiles %}).
 
 All code for this milestone is available at
 [https://github.com/pbelevich/mytriton/tree/ver7](https://github.com/pbelevich/mytriton/tree/ver7).
