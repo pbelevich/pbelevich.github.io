@@ -997,3 +997,5 @@ that step.
 
 All code for this milestone is available at
 [https://github.com/pbelevich/mytriton/tree/ver8](https://github.com/pbelevich/mytriton/tree/ver8).
+
+Next: [Part 9: AST Frontend]({% post_url 2026-08-01-My_Triton_From_Scratch_Part_9_AST_Frontend %}).
