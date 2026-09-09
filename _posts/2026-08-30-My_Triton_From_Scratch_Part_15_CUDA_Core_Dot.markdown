@@ -477,5 +477,4 @@ matrix tiles, it now produces the right answer on a GPU.
 All code for this milestone is available at
 [https://github.com/pbelevich/mytriton/tree/ver15](https://github.com/pbelevich/mytriton/tree/ver15).
 
-The next milestone will let one CUDA thread own several output values in a
-register tile. That post is not published yet.
+Next: [Part 16: Register Tiles]({% post_url 2026-09-05-My_Triton_From_Scratch_Part_16_Register_Tiles %}).
